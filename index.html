@@ -80,6 +80,10 @@
         const photoTextures = [];
         photoFiles.forEach((f, i) => photoTextures[i] = loader.load(f));
 
+        const PHOTO_BASE_SIZE = 8;
+        const MOBILE_PHOTO_MARGIN_PX = 10;
+        const PHOTO_FOCUS_Z = 60;
+
         function createCustomTexture(type) {
             const canvas = document.createElement('canvas');
             canvas.width = 128; canvas.height = 128; backgroundColor = "white";
@@ -267,8 +271,8 @@
         }
 
         function createPhotos() {
-            const geo = new THREE.PlaneGeometry(8, 8);
-            const borderGeo = new THREE.PlaneGeometry(9, 9); 
+            const geo = new THREE.PlaneGeometry(PHOTO_BASE_SIZE, PHOTO_BASE_SIZE);
+            const borderGeo = new THREE.PlaneGeometry(PHOTO_BASE_SIZE + 1, PHOTO_BASE_SIZE + 1); 
             const borderMat = new THREE.MeshBasicMaterial({ color: 0xFFD700 }); 
 
             for(let i=0; i<5; i++) {
@@ -281,6 +285,18 @@
                 scene.add(mesh);
                 photoMeshes.push(mesh);
             }
+        }
+
+        function computePhotoFocusScale(targetZ) {
+            if (!camera) return 3.5 * photoScale;
+            if (window.innerWidth > 768) return 3.5 * photoScale;
+
+            const depth = camera.position.z - targetZ;
+            const visibleHeight = 2 * depth * Math.tan((camera.fov * Math.PI) / 360);
+            const visibleWidth = visibleHeight * camera.aspect;
+            const marginWorld = visibleWidth * (MOBILE_PHOTO_MARGIN_PX / window.innerWidth);
+            const usableWidth = Math.max(visibleWidth - marginWorld * 2, PHOTO_BASE_SIZE * 0.5);
+            return usableWidth / PHOTO_BASE_SIZE;
         }
 
         function createDecorations() {
@@ -463,8 +479,9 @@
                 loveMesh.visible = false;
                 photoMeshes.forEach((mesh, i) => {
                     if (i === selectedIndex) {
-                        mesh.position.lerp(new THREE.Vector3(0, 0, 60), 0.1);
-                        mesh.scale.lerp(new THREE.Vector3(3.5 * photoScale, 3.5 * photoScale, 3.5 * photoScale), 0.1);
+                        const targetScale = computePhotoFocusScale(PHOTO_FOCUS_Z);
+                        mesh.position.lerp(new THREE.Vector3(0, 0, PHOTO_FOCUS_Z), 0.1);
+                        mesh.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1);
                         mesh.lookAt(camera.position); mesh.rotation.z = 0;
                     } else {
                         mesh.scale.lerp(new THREE.Vector3(0,0,0), 0.1);
