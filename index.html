@@ -95,7 +95,7 @@
       bgMusic.volume = 1.0;
 
       const loader = new THREE.TextureLoader();
-      const photoFiles = ["./anh3.jpg", "./anh2.jpg", "./anh1.jpg"];
+      const photoFiles = ["./anh1.jpg", "./anh2.jpg", "./anh3.jpg"];
       const photoTextures = [];
       photoFiles.forEach((f, i) => (photoTextures[i] = loader.load(f)));
 
@@ -293,8 +293,8 @@
           ? [
               // Mobile: theo hình dạng cây thông (trên hẹp, dưới rộng)
               { x: 0, y: 25, z: 10, rot: -0.15 }, // Phải trên (gần)
-              { x: -19, y: 7, z: 0, rot: 0.15 }, // Trái trên (gần)
-              { x: 19, y: 7, z: 3, rot: 0.15 }, // Phải giữa trên
+              { x: -19, y: 4, z: 0, rot: 0.15 }, // Trái trên (gần)
+              { x: 19, y: 4, z: 3, rot: 0.15 }, // Phải giữa trên
               { x: -19, y: 10, z: 3, rot: 0.1 }, // Trái giữa trên
               { x: 26, y: -5, z: 0, rot: -0.1 }, // Phải giữa
               { x: -26, y: -5, z: 0, rot: 0.1 }, // Trái giữa dưới
@@ -315,7 +315,7 @@
 
         for (let i = 0; i < 3; i++) {
           // anh1.jpg (index 5) là ảnh dọc, dùng geometry khác
-          const isPortraitPhoto = i === 2;
+          const isPortraitPhoto = i === 0;
           const photoGeo = isPortraitPhoto
             ? new THREE.PlaneGeometry(photoSize * 0.75, photoSize * 1.2)
             : geo;
